@@ -1,3 +1,5 @@
+import 'dart:convert' show jsonDecode;
+
 import 'package:flutter/material.dart';
 import '../services/chat_store.dart';
 import '../services/api_service.dart';
@@ -7,7 +9,7 @@ import '../widgets/multipiai_drawer.dart';
 import '../widgets/multipiai_app_bar.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Map<String, dynamic> initialData;
+  final List<Map<String, dynamic>> initialData;
   const ChatScreen({super.key, required this.initialData});
 
   @override
@@ -27,37 +29,106 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    // final List<String> ids = [];
+    // final List<String> names = [];
 
-    /// Extract agents from login response ONCE
-    final ids = (widget.initialData['agent_id'] as List<dynamic>?)
-            ?.map((e) => e.toString())
-            .toList() ??
-        [];
+    // for (var agent in widget.initialData) {
+    //   final agentIdList = agent['agent_id'];
+    //   final agentNameList = agent['agent_name'];
 
-    final names = (widget.initialData['agent_name'] as List<dynamic>?)
-            ?.map((e) => e.toString())
-            .toList() ??
-        [];
+    //   ids.addAll(agentIdList.map((e) => e.toString()));
+    //   names.addAll(agentNameList.map((e) => e.toString()));
+    // }
 
-    if (ids.isNotEmpty) {
+    // if (ids.isNotEmpty) {
+    //   _agentIds.addAll(ids);
+    //   _agentNames.addAll(names);
+
+    //   _activeAgentId = _agentIds.first;
+
+    //   _store.agents
+    //     ..clear()
+    //     ..addAll(_agentIds);
+    // }
+    //   _agentNames.addAll(
+    //   widget.initialData.map((agent) => agent['agent_name'].toString())
+    // );
+
+    // if (_agentNames.isNotEmpty) {
+    //   // _activeAgentId = _agentNames.first;
+    //   _store.agents
+    //     ..clear()
+    //     ..addAll(_agentNames); // you can treat agent_name as identifier
+    // }
+
+    // _agentIds.addAll(widget.initialData.map((agent) => agent['agent_id'].toString()));
+
+    // if (_agentIds.isNotEmpty) {
+    //   _activeAgentId = _agentIds.first;
+    //   _store.agents
+    //     ..clear()
+    //     ..addAll(_agentIds); // you can treat agent_id as identifier
+    // }
+
+    _processInitialData();
+    _initStore();
+  }
+
+    void _processInitialData() {
+    for (var agent in widget.initialData) {
+      // Safely get agent_id and agent_name as List<String>
+      final ids = safeStringList(agent['agent_id']);
+      print(ids);
+      final names = safeStringList(agent['agent_name']);
+      print(names);
+
       _agentIds.addAll(ids);
       _agentNames.addAll(names);
+    }
 
+    if (_agentIds.isNotEmpty) {
       _activeAgentId = _agentIds.first;
-
       _store.agents
         ..clear()
         ..addAll(_agentIds);
     }
-
-    _initStore();
   }
+
+List<String> safeStringList(dynamic value) {
+  if (value == null) return [];
+
+  // If it's already a list, map to string
+  if (value is List) return value.map((e) => e.toString()).toList();
+
+  // If it's a JSON string representing a list
+  if (value is String) {
+    try {
+      final parsed = jsonDecode(value);
+      if (parsed is List) return parsed.map((e) => e.toString()).toList();
+    } catch (e) {
+      // not valid JSON, fallback
+      return [];
+    }
+  }
+
+  return [];
+}
+
+
+
+
   Future<void> _initStore() async {
     await _store.load();
     setState(() {
       _loading = false;
     });
   }
+
+  List<dynamic> _safeList(dynamic value) {
+    if (value is List) return value;
+    return [];
+  }
+
 
   Future<void> _send(String text) async {
     await _store.addUserMessage(_activeAgentId, text);
@@ -85,7 +156,7 @@ class _ChatScreenState extends State<ChatScreen> {
       _agentNames.add(name);
       _store.agents.add(id);
     });
-    print(_agentNames);
+    //print(_agentNames);
   }
 
   @override
@@ -94,12 +165,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       drawer: MultipiaiDrawer(
-        agentIds: List<String>.from(widget.initialData['agent_id']),
-        agentNames: List<String>.from(widget.initialData['agent_name']),
+        agentIds: _agentIds,
+        agentNames: _agentNames,
         activeAgentId: _activeAgentId,
         onAgentSelected: _onAgentSelected,
         onAddAgent: _handleAddAgent,
-
       ),
       appBar: MultipiaiAppBar(
         onSearchTap: () {
