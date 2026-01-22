@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 typedef AgentSelectCallback = void Function(String agentId);
 typedef AddAgentCallback = void Function(String agentName);
+typedef LogoutCallback = void Function();
 
 
 class MultipiaiDrawer extends StatefulWidget {
@@ -10,6 +11,8 @@ class MultipiaiDrawer extends StatefulWidget {
   final String activeAgentId;
   final AgentSelectCallback onAgentSelected;
   final AddAgentCallback onAddAgent;
+  final LogoutCallback onLogout;
+
 
 
   const MultipiaiDrawer({
@@ -19,6 +22,7 @@ class MultipiaiDrawer extends StatefulWidget {
     required this.activeAgentId,
     required this.onAgentSelected,
     required this.onAddAgent,
+    required this.onLogout,
   });
 
 
@@ -304,9 +308,7 @@ class _MultipiaiDrawerState extends State<MultipiaiDrawer> {
                         size: 18, color: Colors.grey),
                     const SizedBox(width: 6),
                     InkWell(
-                      onTap: () {
-                        // TODO: handle logout
-                      },
+                      onTap: _confirmLogout,
                       borderRadius: BorderRadius.circular(50),
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -365,5 +367,34 @@ class _MultipiaiDrawerState extends State<MultipiaiDrawer> {
     Navigator.of(context).pop();
   }
 }
+
+Future<void> _confirmLogout() async {
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Logout'),
+      content: const Text('Are you sure you want to logout?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+          ),
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: const Text('Logout'),
+        ),
+      ],
+    ),
+  );
+
+  if (confirm == true) {
+    Navigator.of(context).pop(); // close drawer
+    widget.onLogout(); // 🔥 notify parent
+  }
+}
+
 
 }

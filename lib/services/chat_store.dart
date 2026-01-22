@@ -5,18 +5,7 @@ import '../models/chat_message.dart';
 class ChatStore {
   static const _storageKey = 'multipiai_messages_v1';
 
-  final List<String> agents = [
-    'library',
-    'new_project',
-    'mobility',
-    'media',
-    'retail',
-    'food',
-    'beauty',
-    'packaging',
-    'energy',
-    'mining',
-  ];
+  final List<String> agents = [];
 
   List<ChatMessage> _messages = [];
 
@@ -64,5 +53,10 @@ class ChatStore {
       ),
     );
     await _save();
+  }
+
+   Future<void> clearAll() async {
+    agents.clear();
+    _messages.clear();
   }
 }

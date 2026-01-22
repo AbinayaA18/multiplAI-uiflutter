@@ -1,6 +1,5 @@
-import 'dart:convert' show jsonDecode;
-
 import 'package:flutter/material.dart';
+import 'package:multipiai_flutter/screens/login_screen.dart';
 import '../services/chat_store.dart';
 import '../services/api_service.dart';
 import '../widgets/chat_message_tile.dart';
@@ -29,93 +28,31 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    // final List<String> ids = [];
-    // final List<String> names = [];
-
-    // for (var agent in widget.initialData) {
-    //   final agentIdList = agent['agent_id'];
-    //   final agentNameList = agent['agent_name'];
-
-    //   ids.addAll(agentIdList.map((e) => e.toString()));
-    //   names.addAll(agentNameList.map((e) => e.toString()));
-    // }
-
-    // if (ids.isNotEmpty) {
-    //   _agentIds.addAll(ids);
-    //   _agentNames.addAll(names);
-
-    //   _activeAgentId = _agentIds.first;
-
-    //   _store.agents
-    //     ..clear()
-    //     ..addAll(_agentIds);
-    // }
-    //   _agentNames.addAll(
-    //   widget.initialData.map((agent) => agent['agent_name'].toString())
-    // );
-
-    // if (_agentNames.isNotEmpty) {
-    //   // _activeAgentId = _agentNames.first;
-    //   _store.agents
-    //     ..clear()
-    //     ..addAll(_agentNames); // you can treat agent_name as identifier
-    // }
-
-    // _agentIds.addAll(widget.initialData.map((agent) => agent['agent_id'].toString()));
-
-    // if (_agentIds.isNotEmpty) {
-    //   _activeAgentId = _agentIds.first;
-    //   _store.agents
-    //     ..clear()
-    //     ..addAll(_agentIds); // you can treat agent_id as identifier
-    // }
-
     _processInitialData();
     _initStore();
   }
 
     void _processInitialData() {
-    for (var agent in widget.initialData) {
-      // Safely get agent_id and agent_name as List<String>
-      final ids = safeStringList(agent['agent_id']);
-      print(ids);
-      final names = safeStringList(agent['agent_name']);
-      print(names);
+  for (var agent in widget.initialData) {
+    final String? id = agent['agent_id']?.toString();
+    final String? name = agent['agent_name']?.toString();
 
-      _agentIds.addAll(ids);
-      _agentNames.addAll(names);
+    if (id != null && id.isNotEmpty) {
+      _agentIds.add(id);
     }
 
-    if (_agentIds.isNotEmpty) {
-      _activeAgentId = _agentIds.first;
-      _store.agents
-        ..clear()
-        ..addAll(_agentIds);
+    if (name != null && name.isNotEmpty) {
+      _agentNames.add(name);
     }
   }
 
-List<String> safeStringList(dynamic value) {
-  if (value == null) return [];
-
-  // If it's already a list, map to string
-  if (value is List) return value.map((e) => e.toString()).toList();
-
-  // If it's a JSON string representing a list
-  if (value is String) {
-    try {
-      final parsed = jsonDecode(value);
-      if (parsed is List) return parsed.map((e) => e.toString()).toList();
-    } catch (e) {
-      // not valid JSON, fallback
-      return [];
-    }
+  if (_agentIds.isNotEmpty) {
+    _activeAgentId = _agentIds.first;
+    _store.agents
+      ..clear()
+      ..addAll(_agentIds);
   }
-
-  return [];
 }
-
-
-
 
   Future<void> _initStore() async {
     await _store.load();
@@ -128,6 +65,18 @@ List<String> safeStringList(dynamic value) {
     if (value is List) return value;
     return [];
   }
+
+  Future<void> _logout(BuildContext context) async {
+  await _store.clearAll(); // clear chats / local data
+
+  if (!mounted) return;
+
+  Navigator.of(context).pushAndRemoveUntil(
+    MaterialPageRoute(builder: (_) => const PhoneLoginPage()),
+    (_) => false,
+  );
+}
+
 
 
   Future<void> _send(String text) async {
@@ -170,6 +119,7 @@ List<String> safeStringList(dynamic value) {
         activeAgentId: _activeAgentId,
         onAgentSelected: _onAgentSelected,
         onAddAgent: _handleAddAgent,
+        onLogout: () => _logout(context),
       ),
       appBar: MultipiaiAppBar(
         onSearchTap: () {
@@ -272,4 +222,5 @@ class _EmptyState extends StatelessWidget {
       ),
     );
   }
+  
 }

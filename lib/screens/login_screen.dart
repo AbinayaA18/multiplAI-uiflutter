@@ -39,25 +39,9 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // print(data);
         final List<Map<String, dynamic>> agents = (data as List<dynamic>)
            .map((item) => Map<String, dynamic>.from(item))
            .toList();
-
-        // print(agents);
-       
-        // Navigator.of(context).push(
-        //   MaterialPageRoute<void>(
-        //     builder: (context) => ChatScreen(
-        //       initialData: agents
-        //     ),
-        //   ),
-        // );
-
-    //     final List<Map<String, dynamic>> agents = data
-    // .map((item) => Map<String, dynamic>.from(item))
-    // .toList();
-    print(agents);
       Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (context) => ChatScreen(initialData: agents),
