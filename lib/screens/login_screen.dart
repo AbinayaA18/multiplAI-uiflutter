@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:multipiai_flutter/screens/chat_screen.dart';
+import '../services/supabase_client.dart';
 
 class PhoneLoginPage extends StatefulWidget {
   const PhoneLoginPage({Key? key}) : super(key: key);
@@ -17,46 +18,49 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
   bool _rememberMe = false;
 
   // 🔁 Replace with your API endpoint
-  final String loginApi = 'http://127.0.0.1:5000/get-user-agents';
+  // final String loginApi = 'http://127.0.0.1:5000/get-user-agents';
 
   Future<void> login() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
+  setState(() => _isLoading = true);
 
-    final payload = {
-      "phone": _phoneController.text.trim(),
-    };
+  try {
+    // 🔹 Fetch agents from Supabase
+     final response = await supabase
+        .from('agent_phone_scope_map_sam')
+        .select()
+        .eq('phone_e164', _phoneController.text.trim())
+        .eq('Status', 'A'); // <-- NO .execute()
 
-    try {
-      final response = await http.post(
-        Uri.parse(loginApi),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(payload),
-      );
+    setState(() => _isLoading = false);
 
-      setState(() => _isLoading = false);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final List<Map<String, dynamic>> agents = (data as List<dynamic>)
-           .map((item) => Map<String, dynamic>.from(item))
-           .toList();
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (context) => ChatScreen(initialData: agents),
-        ),
-      );
-
-      } else {
-        final err = jsonDecode(response.body);
-        showError(err['message'] ?? 'Login failed');
-      }
-    } catch (e) {
-      setState(() => _isLoading = false);
-      showError('Something went wrong');
+    // 🔹 Check for errors
+     if (response == null) {
+      showError('No agents found for this number');
+      return;
     }
+    final data = response as List<dynamic>;
+    if (data.isEmpty) {
+      showError('No agents found for this number');
+      return;
+    }
+
+    // 🔹 Convert data to List<Map<String, dynamic>>
+    final List<Map<String, dynamic>> agents =
+        data.map((item) => Map<String, dynamic>.from(item)).toList();
+
+    // 🔹 Navigate to ChatScreen
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => ChatScreen(initialData: agents),
+      ),
+    );
+  } catch (e) {
+    setState(() => _isLoading = false);
+    showError('Something went wrong: $e');
   }
+}
 
   void showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
