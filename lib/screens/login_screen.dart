@@ -199,7 +199,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: Text(
-                'Powered by © 2026 MultiPiAI',
+                'Powered by © 2026 MultiplAI',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.black45,

@@ -20,6 +20,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<String> _agentIds = [];
   final List<String> _agentNames = [];
   String _activeAgentId = '';
+  Map<String, dynamic>? _activeAgent;
   bool _loading = true;
 
   bool _showHeaderSearch = false;
@@ -33,6 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
     void _processInitialData() {
+      print(widget.initialData);
   for (var agent in widget.initialData) {
     final String? id = agent['agent_id']?.toString();
     final String? name = agent['agent_name']?.toString();
@@ -48,6 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   if (_agentIds.isNotEmpty) {
     _activeAgentId = _agentIds.first;
+    _activeAgent = widget.initialData.first;
     _store.agents
       ..clear()
       ..addAll(_agentIds);
@@ -77,21 +80,56 @@ class _ChatScreenState extends State<ChatScreen> {
   );
 }
 
+final ai = ApiService();
 
-
-  Future<void> _send(String text) async {
+Future<void> _send(String text) async {
+  try {
     await _store.addUserMessage(_activeAgentId, text);
-    setState(() {}); // refresh after user message
+    setState(() {});
 
-    final reply =
-        await ApiService.sendMessage(agentId: _activeAgentId, text: text);
+    final payload = {
+        "message": text,
+        "agent_id": _activeAgent!['agent_id'],
+        "client_id": _activeAgent!['client_id'],
+        "endpoint_url": _activeAgent!['endpoint_url'],
+        "client_secret": _activeAgent!['client_secret'],
+        "endpoint_path": _activeAgent!['endpoint_path'],
+        "endpoint_port": _activeAgent!['endpoint_port'],
+        "endpoint_protocol": _activeAgent!['endpoint_protocol'],
+        "endpoint_suffix": _activeAgent!['endpoint_suffix'],
+        "api_version": _activeAgent!['api_version'],
+        "deployment": _activeAgent!['deployment'],
+        "tenant_id": _activeAgent!['tenant_id'],
+        // add other fields you need
+      };
+      print(payload);
+    final reply = await ai.sendMessage(payload);
+    print(reply);
     await _store.addAgentMessage(_activeAgentId, reply);
-    setState(() {}); // refresh after agent message
+    setState(() {});
+
+  } catch (e) {
+    print(e);
   }
+}
+
+  // Future<void> _send(String text) async {
+  //   await _store.addUserMessage(_activeAgentId, text);
+  //   setState(() {}); // refresh after user message
+
+  //   final reply =
+  //       await ApiService.sendMessage(message: text);
+  //   await _store.addAgentMessage(_activeAgentId, reply);
+  //   setState(() {}); // refresh after agent message
+  // }
 
   void _onAgentSelected(String id) {
     setState(() {
       _activeAgentId = id;
+      _activeAgent = widget.initialData.firstWhere(
+        (agent) => agent['agent_id'] == id,
+        orElse: () => {},
+      );
     });
   }
 

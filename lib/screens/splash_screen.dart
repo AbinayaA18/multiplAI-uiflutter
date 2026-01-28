@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
               Image.asset(
                 'assets/images/MultiplAI_Logo_Vertical.png',
                 width: 140,
-                semanticLabel: 'MultipIAI logo',
+                semanticLabel: 'MultiplAI logo',
               )
             ],
           ),

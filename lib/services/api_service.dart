@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = "http://localhost:5000/chat";
+  static const String baseUrl = "http://20.174.8.175:5000/chat";
 
   static const String loginApi = 'http://localhost:5000/get-user-agents';
 
-  static Future<String> sendMessage({
+  static Future<String> sendMessage1({
     required String agentId,
     required String text,
   }) async {
@@ -53,6 +53,21 @@ class ApiService {
     }
     }
 
+
+  Future<String> sendMessage(Map<String, dynamic> payload) async {
+    final response = await http.post(
+      Uri.parse(baseUrl),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Azure AI Error: ${response.body}');
+    }
+
+    final data = jsonDecode(response.body);
+    return data['reply'] as String;
   }
-
-
+}

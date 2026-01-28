@@ -116,7 +116,7 @@ class _MultipiaiDrawerState extends State<MultipiaiDrawer> {
                   ),
                   const SizedBox(width: 10),
                   const Text(
-                    'MultipIAI',
+                    'MultiplAI',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -189,31 +189,31 @@ class _MultipiaiDrawerState extends State<MultipiaiDrawer> {
               ),
             ),
 
-            // "Add Agent" button
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  style: TextButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  onPressed: _showAddAgentDialog,
-                  icon: const Icon(Icons.add, size: 16, color: green),
-                  label: const Text(
-                    'Add Agent',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: green,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // // "Add Agent" button
+            // Padding(
+            //   padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            //   child: Align(
+            //     alignment: Alignment.centerLeft,
+            //     child: TextButton.icon(
+            //       style: TextButton.styleFrom(
+            //         padding:
+            //             const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            //         minimumSize: Size.zero,
+            //         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            //       ),
+            //       onPressed: _showAddAgentDialog,
+            //       icon: const Icon(Icons.add, size: 16, color: green),
+            //       label: const Text(
+            //         'Add Agent',
+            //         style: TextStyle(
+            //           fontSize: 12,
+            //           color: green,
+            //           fontWeight: FontWeight.w600,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
             // AGENT LIST
             Expanded(
@@ -269,43 +269,52 @@ class _MultipiaiDrawerState extends State<MultipiaiDrawer> {
                 ),
                 child: Row(
                   children: [
-                    const CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Color(0xFFB5F5C8), // light green
-                      child: Text(
-                        'JD',
-                        style: TextStyle(color: Colors.black87),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text(
-                            'John Doe',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            'john@multipiai.com',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
+                    // const CircleAvatar(
+                    //   radius: 18,
+                    //   backgroundColor: Color(0xFFB5F5C8), // light green
+                    //   child: Text(
+                    //     'JD',
+                    //     style: TextStyle(color: Colors.black87),
+                    //   ),
+                    // ),
+                    // const SizedBox(width: 12),
+                    // Expanded(
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     mainAxisSize: MainAxisSize.min,
+                    //     children: const [
+                    //       Text(
+                    //         'John Doe',
+                    //         style: TextStyle(
+                    //           fontSize: 14,
+                    //           fontWeight: FontWeight.w600,
+                    //         ),
+                    //         overflow: TextOverflow.ellipsis,
+                    //       ),
+                    //       SizedBox(height: 2),
+                    //       Text(
+                    //         'john@multiplai.com',
+                    //         style: TextStyle(
+                    //           fontSize: 11,
+                    //           color: Colors.grey,
+                    //         ),
+                    //         overflow: TextOverflow.ellipsis,
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                     const SizedBox(width: 6),
-                    const Icon(Icons.keyboard_arrow_down,
-                        size: 18, color: Colors.grey),
+                    // const Icon(Icons.keyboard_arrow_down,
+                    //     size: 18, color: Colors.grey),
+                    // const Spacer(),
+                    const Text(
+                      'Logout',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
                     const SizedBox(width: 6),
                     InkWell(
                       onTap: _confirmLogout,
