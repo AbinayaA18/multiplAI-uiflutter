@@ -182,7 +182,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
                                       )
                                     : const Text(
                                         'Sign in',
-                                        style: TextStyle(fontSize: 16),
+                                        style: TextStyle(fontSize: 16, color: Colors.white),
                                       ),
                               ),
                             ),
